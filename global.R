@@ -20,7 +20,7 @@ cent <- do.call(rbind, cent)
 
 gs4_auth(cache = "../.secrets/", email = TRUE)
 # Sys.sleep(3)
-x <- read_sheet("1sYmvW0xiN86s_PuGtRwLSLGOT-XQr2SzVeITdjSQNvA", skip = 1)
+x <- read_sheet("1LhTQK-yP8lKz5YKzXWBmNhawtu3S69zcXYWtw7QVR1c", skip = 1)
 gs4_deauth()
 
 # x <- readRDS("data/toy.RDS")
@@ -40,6 +40,7 @@ if (length(torm)){
 # Remove tildes and match names with shp file
 x$Departamento <- stri_trans_general(x$Departamento, "Latin-ASCII")
 x$Departamento <- sapply(x$Departamento,  grep, departamentos$admlnm, value = TRUE, ignore.case = T)
+x$Departamento <- factor(x$Departamento, levels = departamentos$admlnm)
 
 # Factorize variants and remove NAs
 x$`Variante por PCR` <- factor(x$`Variante por PCR`, levels = c("No-VOC", "P.1/B.1.351", "B.1.1.7"))
@@ -71,12 +72,15 @@ if (length(torm)){
   x <- x[-torm, ]
 }
 
-totalesV <- table(factor(x$Departamento, levels = departamentos$admlnm), x$`Variante por PCR`)
+totalesV <- table(x$Departamento, x$`Variante por PCR`)
 class(totalesV) <- "matrix"
 totalesV <- as.data.frame(totalesV)
 totalesV$Total <- rowSums(totalesV)
 
-totalesS <- table(factor(x$Departamento, levels = departamentos$admlnm), x$`Linaje por Secuenciación`)
+#Only which pass QC
+xS <- x[which(x$QC_FINAL %in% c("PASS_0-10", "WARNING_10-30")), ]
+xS$Linaje.poreCov <- factor(xS$Linaje.poreCov)
+totalesS <- table(xS$Departamento, xS$Linaje.poreCov)
 class(totalesS) <- "matrix"
 totalesS <- as.data.frame(totalesS)
 totalesS$Total <- rowSums(totalesS)

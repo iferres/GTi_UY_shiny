@@ -71,7 +71,7 @@ shinyServer(function(input, output, session){
   output$barV <- renderPlotly({
     df <- as.data.frame(table(x$Semana, x$`Variante por PCR`, x$Departamento, x$Sexo))
     names(df) <- c("Semana", "Variante", "Departamento", "Sexo", "Conteo")
-    df$Departamento <- factor(df$Departamento, levels = departamentos$admlnm)
+    # df$Departamento <- factor(df$Departamento, levels = departamentos$admlnm)
     
     ln <- length(levels(df[[colorbyV()]]))
     if (ln>10){
@@ -224,7 +224,7 @@ shinyServer(function(input, output, session){
                   label = paste0(rownames(totalesS), ": ", totalesS$Total)) %>% # popup dep name
       addMinicharts(lng = cent[, 1], 
                     lat = cent[, 2],
-                    colorPalette = hue_pal()(4),
+                    colorPalette = hue_pal()(length(levels(xS$Linaje.poreCov))),
                     chartdata = totalesS[,-dim(totalesS)[2]],
                     type = "pie", 
                     showLabels = TRUE, 
@@ -234,15 +234,15 @@ shinyServer(function(input, output, session){
   
   
   output$barS <- renderPlotly({
-    df <- as.data.frame(table(x$Semana, x$`Linaje por Secuenciación`, x$Departamento, x$Sexo))
+    df <- as.data.frame(table(xS$Semana, xS$Linaje.poreCov, xS$Departamento, xS$Sexo))
     names(df) <- c("Semana", "Linaje", "Departamento", "Sexo", "Conteo")
-    df$Departamento <- factor(df$Departamento, levels = departamentos$admlnm)
+    # df$Departamento <- factor(df$Departamento, levels = departamentos$admlnm)
     
     ln <- length(levels(df[[colorbyS()]]))
     if (ln>10){
       pals <- colorRampPalette(pal_npg()(10))(ln)
     }else if(colorbyS() == "Linaje"){
-      pals <- hue_pal()(6)
+      pals <- hue_pal()(length(levels(xS$Linaje.poreCov)))
     }else{
       pals <- pal_npg()(ln)
     }
