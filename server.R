@@ -2,14 +2,25 @@ shinyServer(function(input, output, session){
   
   X <- reactiveVal(x)
   win <- reactiveVal(7)
+  colorbyV <- reactiveVal("Variante")
+  colorbyS <- reactiveVal("Linaje")
+  
+  
+  observeEvent(input$color_byV, {
+    colorbyV(input$color_byV)
+  })
+  
+  observeEvent(input$color_byS, {
+    colorbyS(input$color_byS)
+  })
   
   observeEvent(c(input$fechas, input$departamentos), {
     if (input$departamentos == "Todos"){
-      X(x[which( x$`Fecha de diagnóstico`>= input$fechas[1] &
-                   x$`Fecha de diagnóstico`<= input$fechas[2] ), , drop = FALSE])
+      X(x[which( x$`Fecha de diagnóstico`>= as.Date(input$fechas[1]) &
+                   x$`Fecha de diagnóstico`<= as.Date(input$fechas[2]) ), , drop = FALSE])
     }else{
-      X(x[which( x$`Fecha de diagnóstico`>= input$fechas[1] &
-                   x$`Fecha de diagnóstico`<= input$fechas[2] &
+      X(x[which( x$`Fecha de diagnóstico`>= as.Date(input$fechas[1]) &
+                   x$`Fecha de diagnóstico`<= as.Date(input$fechas[2]) &
                    x$Departamento == input$departamentos), , drop = FALSE])
     }
   })
@@ -25,30 +36,59 @@ shinyServer(function(input, output, session){
   
   
   output$num_qpcr <- renderValueBox({
-    valueBox(sum(totales$Total), 
+    valueBox(sum(totalesV$Total), 
              subtitle = "Número de muestras por qPCR", 
              color = "green")
   })
   output$num_seq <- renderValueBox({
-    valueBox(table(x$Secuenciación)[["Si"]], 
+    valueBox(sum(totalesS$Total),
              subtitle = "Número de muestras secuenciadas",
              color = "green")
   })
   
+  
   ## LEAFLET MAP  
-  output$map <- renderLeaflet({
-    leaflet(departamentos) %>%
+  output$mapV <- renderLeaflet({
+    leaflet(departamentos, options = leafletOptions(zoomControl=FALSE, minZoom = 7, maxZoom = 7)) %>%
       addPolygons(color = "black",
-                  fillColor = colorNumeric("Greens", domain = NULL)(totales$Total),
+                  fillColor = colorNumeric("Greens", domain = NULL)(totalesV$Total),
                   weight = 1, 
                   smoothFactor = 0.5,
                   opacity = 1.0, 
-                  fillOpacity = 0.5, 
-                  label = ~admlnm) %>% # popup dep name
+                  fillOpacity = 0.5,
+                  label = paste0(rownames(totalesV), ": ", totalesV$Total)) %>% # popup dep name
       addMinicharts(lng = cent[, 1], 
                     lat = cent[, 2],
-                    chartdata = totales[,c("No-VOC", "P.1/B.1.351", "B.1.1.7")],
-                    type = "pie", showLabels = TRUE, height = 50, width = 50)
+                    colorPalette = hue_pal()(3),
+                    chartdata = totalesV[,c("No-VOC", "P.1/B.1.351", "B.1.1.7")],
+                    type = "pie", 
+                    showLabels = TRUE, 
+                    height = 50, 
+                    width = 50)
+  })
+  
+  
+  output$barV <- renderPlotly({
+    df <- as.data.frame(table(x$Semana, x$`Variante por PCR`, x$Departamento, x$Sexo))
+    names(df) <- c("Semana", "Variante", "Departamento", "Sexo", "Conteo")
+    df$Departamento <- factor(df$Departamento, levels = departamentos$admlnm)
+    
+    ln <- length(levels(df[[colorbyV()]]))
+    if (ln>10){
+      pals <- colorRampPalette(pal_npg()(10))(ln)
+    }else if(colorbyV() == "Variante"){
+      pals <- hue_pal()(3)
+    }else{
+      pals <- pal_npg()(ln)
+    }
+    
+    g6 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyV()))) + 
+      stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "stack") + 
+      scale_fill_manual(values = pals) + 
+      theme_bw()
+    
+    ggplotly(g6)
+    
   })
   
   # torm <- which(is.na(x$Edad))
@@ -56,11 +96,40 @@ shinyServer(function(input, output, session){
   #   x <- x[-torm, ]
   # }
   
+  ## SCATTER DENSITY ##
+  output$scat <- renderPlotly({
+    g3 <- ggplot(X(), aes(x=`Fecha de diagnóstico`, y = Edad, color = `Variante por PCR`)) + 
+      geom_point() + 
+      ylab("Edad") + 
+      scale_color_discrete(drop = FALSE, guide = FALSE) +
+      theme_bw()
+    g4 <- ggplot(X(), aes(x = `Fecha de diagnóstico`)) + 
+      geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
+      scale_fill_discrete(drop = FALSE, guide = FALSE) +
+      theme_void()
+    g5 <- ggplot(X(), aes(x = Edad)) + 
+      geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
+      scale_fill_discrete(drop = FALSE, guide = FALSE) +
+      theme_void() + 
+      coord_flip()
+    subplot(ggplotly(g4), plotly_empty(),
+            ggplotly(g3) , ggplotly(g5), 
+            nrows = 2, 
+            shareX = T, 
+            shareY = T, 
+            heights = c(0.2, 0.8), 
+            widths = c(0.9, 0.1),
+            margin = 0) %>% 
+      hide_legend()
+  })
+  
+  
   ## STEP PLOT
   output$cumulative <- renderPlotly({
     g1 <- ggplot(X(), aes(x=`Fecha de diagnóstico`, color=`Variante por PCR`, y = conteo_variante)) + 
       geom_step() + scale_color_discrete(drop = F) + theme_bw()
-    ggplotly(g1)
+    ggplotly(g1) %>% 
+      hide_legend()
   })
   
   ## AREA PLOT
@@ -110,7 +179,11 @@ shinyServer(function(input, output, session){
                  fill = variable,
                  group = variable)) +
       geom_area() +
+      scale_fill_discrete(drop = F) +
       theme_bw()
+    
+      ggplotly(g2) %>% 
+      hide_legend()
   })
   
   
@@ -138,27 +211,50 @@ shinyServer(function(input, output, session){
   # Scatter density
   # x2 <- x[-which(is.na(x$`Fecha de diagnóstico`) | is.na(x$Edad))]
   
-  output$scat <- renderPlotly({
-    g3 <- ggplot(X(), aes(x=`Fecha de diagnóstico`, y = Edad, color = `Variante por PCR`)) + 
-      geom_point() + 
-      theme(legend.position = "bottom")
-    g4 <- ggplot(X(), aes(x = `Fecha de diagnóstico`)) + 
-      geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
-      theme_void() + 
-      theme(legend.position = "none")
-    g5 <- ggplot(X(), aes(x = Edad)) + 
-      geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
-      theme_void() + 
-      theme(legend.position = "none") + 
-      coord_flip()
-    subplot(g4, plotly_empty(),
-            g3 , g5, 
-            nrows = 2, 
-            heights = c(0.2, 0.8), 
-            widths = c(0.8, 0.2),
-            margin = 0)
+  
+  ## LEAFLET MAP  
+  output$mapS <- renderLeaflet({
+    leaflet(departamentos, options = leafletOptions(zoomControl=FALSE, minZoom = 7, maxZoom = 7)) %>%
+      addPolygons(color = "black",
+                  fillColor = colorNumeric("Greens", domain = NULL)(totalesS$Total),
+                  weight = 1, 
+                  smoothFactor = 0.5,
+                  opacity = 1.0, 
+                  fillOpacity = 0.5,
+                  label = paste0(rownames(totalesS), ": ", totalesS$Total)) %>% # popup dep name
+      addMinicharts(lng = cent[, 1], 
+                    lat = cent[, 2],
+                    colorPalette = hue_pal()(4),
+                    chartdata = totalesS[,-dim(totalesS)[2]],
+                    type = "pie", 
+                    showLabels = TRUE, 
+                    height = 50, 
+                    width = 50)
   })
+  
+  
+  output$barS <- renderPlotly({
+    df <- as.data.frame(table(x$Semana, x$`Linaje por Secuenciación`, x$Departamento, x$Sexo))
+    names(df) <- c("Semana", "Linaje", "Departamento", "Sexo", "Conteo")
+    df$Departamento <- factor(df$Departamento, levels = departamentos$admlnm)
     
+    ln <- length(levels(df[[colorbyS()]]))
+    if (ln>10){
+      pals <- colorRampPalette(pal_npg()(10))(ln)
+    }else if(colorbyS() == "Linaje"){
+      pals <- hue_pal()(6)
+    }else{
+      pals <- pal_npg()(ln)
+    }
+    
+    g7 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyS()))) + 
+      stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "stack") + 
+      scale_fill_manual(values = pals) + 
+      theme_bw()
+    
+    ggplotly(g7)
+    
+  })
     
   
   
