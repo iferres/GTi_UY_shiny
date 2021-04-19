@@ -14,20 +14,23 @@ shinyServer(function(input, output, session){
     colorbyS(input$color_byS)
   })
   
-  observeEvent(c(input$fechas, input$departamentos), {
+  observeEvent({
+    input$fechas 
+    input$departamentos
+  }, {
     if (input$departamentos == "Todos"){
-      X(x[which( x$`Fecha de diagnóstico`>= as.Date(input$fechas[1]) &
-                   x$`Fecha de diagnóstico`<= as.Date(input$fechas[2]) ), , drop = FALSE])
+      X(x[which( x$`Fecha de diagnóstico2` >= input$fechas[1] &
+                   x$`Fecha de diagnóstico2` <= input$fechas[2] ), , drop = FALSE])
     }else{
-      X(x[which( x$`Fecha de diagnóstico`>= as.Date(input$fechas[1]) &
-                   x$`Fecha de diagnóstico`<= as.Date(input$fechas[2]) &
+      X(x[which( x$`Fecha de diagnóstico2` >= input$fechas[1] &
+                   x$`Fecha de diagnóstico2` <= input$fechas[2] &
                    x$Departamento == input$departamentos), , drop = FALSE])
     }
   })
   
   # observeEvent(input$fechas, {
-  #   X(x[which( x$`Fecha de diagnóstico`>= input$fechas[1] & 
-  #                x$`Fecha de diagnóstico`<= input$fechas[2] ), , drop = FALSE])
+  #   X(x[which( x$`Fecha de diagnóstico2`>= input$fechas[1] & 
+  #                x$`Fecha de diagnóstico2`<= input$fechas[2] ), , drop = FALSE])
   # })
   
   observeEvent(input$window, {
@@ -98,12 +101,12 @@ shinyServer(function(input, output, session){
   
   ## SCATTER DENSITY ##
   output$scat <- renderPlotly({
-    g3 <- ggplot(X(), aes(x=`Fecha de diagnóstico`, y = Edad, color = `Variante por PCR`)) + 
+    g3 <- ggplot(X(), aes(x=`Fecha de diagnóstico2`, y = Edad, color = `Variante por PCR`)) + 
       geom_point() + 
       ylab("Edad") + 
       scale_color_discrete(drop = FALSE, guide = FALSE) +
       theme_bw()
-    g4 <- ggplot(X(), aes(x = `Fecha de diagnóstico`)) + 
+    g4 <- ggplot(X(), aes(x = `Fecha de diagnóstico2`)) + 
       geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
       scale_fill_discrete(drop = FALSE, guide = FALSE) +
       theme_void()
@@ -126,7 +129,7 @@ shinyServer(function(input, output, session){
   
   ## STEP PLOT
   output$cumulative <- renderPlotly({
-    g1 <- ggplot(X(), aes(x=`Fecha de diagnóstico`, color=`Variante por PCR`, y = conteo_variante)) + 
+    g1 <- ggplot(X(), aes(x=`Fecha de diagnóstico2`, color=`Variante por PCR`, y = conteo_variante)) + 
       geom_step() + scale_color_discrete(drop = F) + theme_bw()
     ggplotly(g1) %>% 
       hide_legend()
@@ -134,7 +137,7 @@ shinyServer(function(input, output, session){
   
   ## AREA PLOT
   # output$area <- renderPlotly({
-  #   g2 <- by(X()[c("Departamento", "Variante por PCR", "Fecha de diagnóstico", "conteo_variante")], X()$`Fecha de diagnóstico`, function(y){
+  #   g2 <- by(X()[c("Departamento", "Variante por PCR", "Fecha de diagnóstico2", "conteo_variante")], X()$`Fecha de diagnóstico2`, function(y){
   #     max <- by(y, y$`Variante por PCR`, function(z) {
   #       wma <- which.max(z$conteo_variante)
   #       z <- z[wma,]
@@ -145,7 +148,7 @@ shinyServer(function(input, output, session){
   #     if (ln){
   #       ad <- list(Departamento = rep(NA_character_, ln), 
   #                  `Variante por PCR` = lvl[wlv], 
-  #                  `Fecha de diagnóstico` = rep(max$`Fecha de diagnóstico`[1], ln),
+  #                  `Fecha de diagnóstico2` = rep(max$`Fecha de diagnóstico2`[1], ln),
   #                  conteo_variante = rep(0L, ln))
   #       max <- rbind(max, ad)
   #     }
@@ -153,7 +156,7 @@ shinyServer(function(input, output, session){
   #     max
   #   }) %>%
   #     do.call(rbind, .) %>% 
-  #     ggplot(aes(x = `Fecha de diagnóstico`, 
+  #     ggplot(aes(x = `Fecha de diagnóstico2`, 
   #                y = porcentaje, 
   #                fill = `Variante por PCR`, 
   #                group = `Variante por PCR`)) + 
@@ -164,12 +167,12 @@ shinyServer(function(input, output, session){
   # })
   
   output$area <- renderPlotly({
-    ww <- cut.Date(X()$`Fecha de diagnóstico`, breaks = paste(win(), "days"), labels = FALSE)
+    ww <- cut(X()$`Fecha de diagnóstico2`, breaks = paste(win(), "days"), labels = FALSE)
     g2 <- X() %>% by(ww, function(y) y ) %>% 
       lapply(function(y){
         data.frame(
           as.list(proportions(table(y$`Variante por PCR`)) * 100),
-          list(Day = min(y$`Fecha de diagnóstico`))
+          list(Day = min(y$`Fecha de diagnóstico2`))
         )
       }) %>%
       do.call(rbind, .)  %>%
@@ -188,7 +191,7 @@ shinyServer(function(input, output, session){
   
   
   ## HEATMAP
-  # hm <- by(x, x$`Fecha de diagnóstico`, function(y){
+  # hm <- by(x, x$`Fecha de diagnóstico2`, function(y){
   #   lst <- list(
   #     Menores = which(y$Edad < 18),
   #     Adultos = which(y$Edad >= 18 & y$Edad < 60),
@@ -209,7 +212,7 @@ shinyServer(function(input, output, session){
   
   
   # Scatter density
-  # x2 <- x[-which(is.na(x$`Fecha de diagnóstico`) | is.na(x$Edad))]
+  # x2 <- x[-which(is.na(x$`Fecha de diagnóstico2`) | is.na(x$Edad))]
   
   
   ## LEAFLET MAP  

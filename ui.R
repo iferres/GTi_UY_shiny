@@ -72,12 +72,12 @@ ui <- dashboardPage(
                 column(
                   width = 6,
                   dateRangeInput(
-                    "fechas", 
-                    label = "Zoom intervalo de fechas:", 
-                    min = min(x$`Fecha de diagnóstico`), 
-                    max = max(x$`Fecha de diagnóstico`),
-                    start = as.Date("2021-02-24"), 
-                    end = max(x$`Fecha de diagnóstico`),
+                    "fechas",
+                    label = "Zoom intervalo de fechas:",
+                    min = min(x$`Fecha de diagnóstico2`),
+                    max = max(x$`Fecha de diagnóstico2`),
+                    start = "2021-02-24",
+                    end = max(x$`Fecha de diagnóstico2`),
                     format = "dd-mm-yyyy",
                     language = "es",
                     width = "300px"
