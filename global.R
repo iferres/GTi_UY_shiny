@@ -49,9 +49,25 @@ if (length(torm)){
   x <- x[-torm, ]
 }
 
-# Sort by Fecha de diagnóstico
-x$`Fecha de diagnóstico` <- as.Date(x$`Fecha de diagnóstico`)
-x <- x[order(x$`Fecha de diagnóstico`), ]
+# Sort by Fecha de hisopado/diagnóstico
+# x$`Fecha de diagnóstico` <- as.Date(x$`Fecha de diagnóstico`)
+# x$`Fecha de hisopado` <- as.Date(x$`Fecha de hisopado`)
+x$`Fecha de diagnóstico2` <- apply(x, 1, function(y){
+  fh <- y[["Fecha de hisopado"]]
+  fd <- y[["Fecha de diagnóstico"]]
+  if (!is.na(fh)){
+    res <- fh
+  } else if (!is.na(fd)) {
+    res <- fd
+  } else {
+   res <- fh
+  }
+  res
+}) %>% 
+  as.POSIXct(origin="1970-01-01") %>%
+  as.Date()
+
+x <- x[order(x$`Fecha de diagnóstico2`), ]
 
 # Add count per Departamento
 x <- by(x, x$`Variante por PCR`, function(y){
@@ -61,13 +77,14 @@ x <- by(x, x$`Variante por PCR`, function(y){
   do.call(rbind, .)
 
 # Sort by Fecha de diagnóstico
-x <- x[order(x$`Fecha de diagnóstico`), ]
+x <- x[order(x$`Fecha de diagnóstico2`), ]
 
-x$Año <- strftime(x$`Fecha de diagnóstico`, format = "%Y")
-x$Semana_diagnostico <- strftime(x$`Fecha de diagnóstico`, format = "%V")
-x$`Semana Epidemiológica` <- cut.Date(x$`Fecha de diagnóstico`, breaks = "1 week", labels = F)
+x$Año <- strftime(x$`Fecha de diagnóstico2`, format = "%Y")
+x$Semana_diagnostico <- strftime(x$`Fecha de diagnóstico2`, format = "%V")
+x$`Semana Epidemiológica` <- cut(x$`Fecha de diagnóstico2`, breaks = "1 week", labels = F)
+x$Semana <- as.Date(x$Semana)
 
-torm <- which(is.na(x$`Fecha de diagnóstico`))
+torm <- which(is.na(x$`Fecha de diagnóstico2`))
 if (length(torm)){
   x <- x[-torm, ]
 }
