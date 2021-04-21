@@ -1,12 +1,21 @@
+
+readdata <- function(times = 3){
+  on.exit( gs4_deauth() )
+  while (times>0 && class(x)=="try-error"){
+    gs4_auth(cache = "../.secrets/", email = TRUE)
+    x <- try(read_sheet("1LhTQK-yP8lKz5YKzXWBmNhawtu3S69zcXYWtw7QVR1c", skip = 1))
+    times <- times - 1L
+  }
+  x
+}
+
 shinyServer(function(input, output, session){
   
   #######################
   ## READ LATEST DATA ##
   ######################
   
-  gs4_auth(cache = "../.secrets/", email = TRUE)
-  # Sys.sleep(3)
-  x <- read_sheet("1LhTQK-yP8lKz5YKzXWBmNhawtu3S69zcXYWtw7QVR1c", skip = 1)
+  x <- readdata(times = 3)
   gs4_deauth()
   
   ################
@@ -92,6 +101,34 @@ shinyServer(function(input, output, session){
   totalesS <- as.data.frame(totalesS)
   totalesS$Total <- rowSums(totalesS)
   
+  
+  #########
+  ## UIs ##
+  #########
+  output$fechas <- renderUI({
+    dateRangeInput(
+      "fechas",
+      label = "Zoom intervalo de fechas:",
+      min = min(x$`Fecha de diagnóstico2`),
+      max = max(x$`Fecha de diagnóstico2`),
+      start = "2021-02-24",
+      end = max(x$`Fecha de diagnóstico2`),
+      format = "dd-mm-yyyy",
+      language = "es",
+      width = "300px"
+    )
+  })
+  
+  output$departamentos <- renderUI({
+    pickerInput(
+      "departamentos",
+      label = "Departamentos",
+      choices = c("Todos", unique(x$Departamento)), 
+      selected = "Todos",
+      multiple = FALSE,
+      width = "300px"
+    )
+  })
   
   
   ################

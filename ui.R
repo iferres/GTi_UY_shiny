@@ -60,28 +60,11 @@ ui <- dashboardPage(
               fluidRow(
                 column(
                   width = 6, 
-                  pickerInput(
-                    "departamentos",
-                    label = "Departamentos",
-                    choices = c("Todos", unique(x$Departamento)), 
-                    selected = "Todos",
-                    multiple = FALSE,
-                    width = "300px"
-                  )
+                  uiOutput("departamentos")
                 ),
                 column(
                   width = 6,
-                  dateRangeInput(
-                    "fechas",
-                    label = "Zoom intervalo de fechas:",
-                    min = min(x$`Fecha de diagnóstico2`),
-                    max = max(x$`Fecha de diagnóstico2`),
-                    start = "2021-02-24",
-                    end = max(x$`Fecha de diagnóstico2`),
-                    format = "dd-mm-yyyy",
-                    language = "es",
-                    width = "300px"
-                  )
+                  uiOutput("fechas")
                 )
               ),
               fluidRow(
