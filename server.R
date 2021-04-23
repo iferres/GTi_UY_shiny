@@ -227,7 +227,8 @@ shinyServer(function(input, output, session){
     g6 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyV()))) + 
       stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "stack") + 
       scale_fill_manual(values = pals) + 
-      theme_bw()
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 35, vjust = 0.5)) 
     
     ggplotly(g6)
     
@@ -253,7 +254,7 @@ shinyServer(function(input, output, session){
       geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
       scale_fill_discrete(drop = FALSE, guide = FALSE) +
       theme_void() + 
-      coord_flip()
+      coord_flip() 
     subplot(ggplotly(g4), plotly_empty(),
             ggplotly(g3) , ggplotly(g5), 
             nrows = 2, 
@@ -262,14 +263,17 @@ shinyServer(function(input, output, session){
             heights = c(0.2, 0.8), 
             widths = c(0.9, 0.1),
             margin = 0) %>% 
-      hide_legend()
+      hide_legend() %>% 
+      layout(xaxis=list(title="Fecha de diagnóstico"))
   })
   
   
   ## STEP PLOT
   output$cumulative <- renderPlotly({
     g1 <- ggplot(X(), aes(x=`Fecha de diagnóstico2`, color=`Variante por PCR`, y = conteo_variante)) + 
-      geom_step() + scale_color_discrete(drop = F) + theme_bw()
+      geom_step() + scale_color_discrete(drop = F) + 
+      theme_bw() + 
+      xlab("Fecha de diagnóstico")
     ggplotly(g1) %>% 
       hide_legend()
   })
@@ -322,7 +326,8 @@ shinyServer(function(input, output, session){
                  group = variable)) +
       geom_area() +
       scale_fill_discrete(drop = F) +
-      theme_bw()
+      theme_bw() + 
+      xlab("Fecha de diagnóstico")
     
       ggplotly(g2) %>% 
       hide_legend()
