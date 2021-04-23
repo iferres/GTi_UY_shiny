@@ -9,11 +9,11 @@ shinyServer(function(input, output, session){
   readdata <- function(times = 3){
     on.exit( gs4_deauth() )
     gs4_auth(cache = "../.secrets/", email = TRUE)
-    x <- try(read_sheet("1LhTQK-yP8lKz5YKzXWBmNhawtu3S69zcXYWtw7QVR1c", skip = 1))
+    x <- try(read_sheet("1AQ1tG4pw2F7wVtgnIQ_eaPax32lxVyaZz-46hjoPRYE", sheet = "Hoja 1"))
     times <- times - 1L
     while (times>0 & class(x)=="try-error"){
       gs4_auth(cache = "../.secrets/", email = TRUE)
-      x <- try(read_sheet("1LhTQK-yP8lKz5YKzXWBmNhawtu3S69zcXYWtw7QVR1c", skip = 1))
+      x <- try(read_sheet("1AQ1tG4pw2F7wVtgnIQ_eaPax32lxVyaZz-46hjoPRYE", sheet = "Hoja 1"))
       times <- times - 1L
     }
     x
