@@ -9,11 +9,11 @@ shinyServer(function(input, output, session){
   readdata <- function(times = 3){
     on.exit( gs4_deauth() )
     gs4_auth(cache = "../.secrets/", email = TRUE)
-    x <- try(read_sheet("1AQ1tG4pw2F7wVtgnIQ_eaPax32lxVyaZz-46hjoPRYE", sheet = "Hoja 1"))
+    x <- try(read_sheet("1CP4TG44tYZ860SynTpwlTq1LtAdsq9KF9LcyrsMtrP4", skip = 1, sheet = "Hoja 1"))
     times <- times - 1L
     while (times>0 & class(x)=="try-error"){
       gs4_auth(cache = "../.secrets/", email = TRUE)
-      x <- try(read_sheet("1AQ1tG4pw2F7wVtgnIQ_eaPax32lxVyaZz-46hjoPRYE", sheet = "Hoja 1"))
+      x <- try(read_sheet("1CP4TG44tYZ860SynTpwlTq1LtAdsq9KF9LcyrsMtrP4", skip = 1, sheet = "Hoja 1"))
       times <- times - 1L
     }
     x
@@ -29,7 +29,7 @@ shinyServer(function(input, output, session){
   # x <- readRDS("data/toy.RDS")
   
   # Remove "Descartada".
-  torm <- which(x$Estado == "Descartada")
+  torm <- which(x$`Status qPCR` != "Finalizada")
   if (length(torm)){
     x <- x[-torm, ]
   }
@@ -127,7 +127,7 @@ shinyServer(function(input, output, session){
     pickerInput(
       "departamentos",
       label = "Departamentos",
-      choices = c("Todos", unique(x$Departamento)), 
+      choices = c("Todos", as.character(unique(x$Departamento))), 
       selected = "Todos",
       multiple = FALSE,
       width = "300px"
