@@ -11,7 +11,8 @@ ui <- dashboardPage(
     
     fluidRow(
       valueBoxOutput("num_qpcr"),
-      valueBoxOutput("num_seq")
+      valueBoxOutput("num_seq"),
+      valueBoxOutput("last_update")
     ),
     
     fluidRow(

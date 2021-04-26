@@ -176,7 +176,7 @@ shinyServer(function(input, output, session){
     win(input$window)
   })
   
-  
+  ## VALUE BOXES 
   output$num_qpcr <- renderValueBox({
     valueBox(sum(totalesV$Total), 
              subtitle = "Número de muestras por qPCR", 
@@ -185,6 +185,11 @@ shinyServer(function(input, output, session){
   output$num_seq <- renderValueBox({
     valueBox(sum(totalesS$Total),
              subtitle = "Número de muestras secuenciadas",
+             color = "green")
+  })
+  output$last_update <- renderValueBox({
+    valueBox(format(max(x$`Fecha de diagnóstico2`), format="%d/%m/%Y"),
+             subtitle = "Fecha de diagóstico más reciente", 
              color = "green")
   })
   
