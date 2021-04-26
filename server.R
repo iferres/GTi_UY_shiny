@@ -420,6 +420,10 @@ shinyServer(function(input, output, session){
     ggplotly(g7)
     
   })
+  
+  output$seqdata <- renderDT({
+    datatable(xS[, c("ID Consorcio", "Ct", "Departamento", "Sexo", "QC_FINAL", "Mutaciones", "Deleciones")])
+  })
     
   
   

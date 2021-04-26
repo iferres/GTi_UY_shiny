@@ -132,7 +132,7 @@ ui <- dashboardPage(
             )
           ), 
           fluidRow(
-            
+            DTOutput("seqdata")
           )
         )
       )
