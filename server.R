@@ -194,6 +194,15 @@ shinyServer(function(input, output, session){
   })
   
   
+  ## PALETTE
+  vocs <- c("P.1", "P.1/B.1.351", "P.2", "B.1.1.7", "No-VOC")
+  vocls <- c("#DC0000FF", "#DC0000FF", "#E64B35FF", "#F39B7FFF", "#00A087FF")
+  novoc <- as.character(unique(xS$Linaje.poreCov)[!unique(xS$Linaje.poreCov) %in% vocs])
+  nwpl <- c(pal_npg()(10), pal_igv()(10)[-2])
+  novcls <- nwpl[-which(nwpl %in% vocls)][seq_along(novoc)]
+  vars <- c(vocs, novoc)
+  pal <- setNames(c(vocls, novcls), vars)
+  
   ## LEAFLET MAP  
   output$mapV <- renderLeaflet({
     leaflet(departamentos, options = leafletOptions(zoomControl=FALSE, minZoom = 7, maxZoom = 7)) %>%
@@ -206,7 +215,7 @@ shinyServer(function(input, output, session){
                   label = paste0(rownames(totalesV), ": ", totalesV$Total)) %>% # popup dep name
       addMinicharts(lng = cent[, 1], 
                     lat = cent[, 2],
-                    colorPalette = hue_pal()(3),
+                    colorPalette = unname(pal[c("No-VOC", "P.1/B.1.351", "B.1.1.7")]),
                     chartdata = totalesV[,c("No-VOC", "P.1/B.1.351", "B.1.1.7")],
                     type = "pie", 
                     showLabels = TRUE, 
@@ -224,7 +233,7 @@ shinyServer(function(input, output, session){
     if (ln>10){
       pals <- colorRampPalette(pal_npg()(10))(ln)
     }else if(colorbyV() == "Variante"){
-      pals <- hue_pal()(3)
+      pals <-pal[c("No-VOC", "P.1/B.1.351", "B.1.1.7")]
     }else{
       pals <- pal_npg()(ln)
     }
@@ -249,15 +258,15 @@ shinyServer(function(input, output, session){
     g3 <- ggplot(X(), aes(x=`Fecha de diagnóstico2`, y = Edad, color = `Variante por PCR`)) + 
       geom_point() + 
       ylab("Edad") + 
-      scale_color_discrete(drop = FALSE, guide = FALSE) +
+      scale_color_manual(values = pal, drop = FALSE, guide = FALSE) +
       theme_bw()
     g4 <- ggplot(X(), aes(x = `Fecha de diagnóstico2`)) + 
       geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
-      scale_fill_discrete(drop = FALSE, guide = FALSE) +
+      scale_fill_manual(values = pal, drop = FALSE, guide = FALSE) +
       theme_void()
     g5 <- ggplot(X(), aes(x = Edad)) + 
       geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
-      scale_fill_discrete(drop = FALSE, guide = FALSE) +
+      scale_fill_manual(values = pal, drop = FALSE, guide = FALSE) +
       theme_void() + 
       coord_flip() 
     subplot(ggplotly(g4), plotly_empty(),
@@ -276,9 +285,10 @@ shinyServer(function(input, output, session){
   ## STEP PLOT
   output$cumulative <- renderPlotly({
     g1 <- ggplot(X(), aes(x=`Fecha de diagnóstico2`, color=`Variante por PCR`, y = conteo_variante)) + 
-      geom_step() + scale_color_discrete(drop = F) + 
+      geom_step() + scale_color_manual(values = pal, drop = F) + 
       theme_bw() + 
-      xlab("Fecha de diagnóstico")
+      xlab("Fecha de diagnóstico") + 
+      ylab("Conteo")
     ggplotly(g1) %>% 
       hide_legend()
   })
@@ -324,15 +334,17 @@ shinyServer(function(input, output, session){
         )
       }) %>%
       do.call(rbind, .)  %>%
-      melt(id.vars = "Day", measure.vars = c("No.VOC", "P.1.B.1.351", "B.1.1.7")) %>%
+      setNames(c("No-VOC", "P.1/B.1.351", "B.1.1.7", "Day")) %>%
+      melt(id.vars = "Day", measure.vars = c("No-VOC", "P.1/B.1.351", "B.1.1.7")) %>%
       ggplot(aes(x = Day,
                  y = value,
                  fill = variable,
                  group = variable)) +
       geom_area() +
-      scale_fill_discrete(drop = F) +
+      scale_fill_manual(values = pal, drop = F) +
       theme_bw() + 
-      xlab("Fecha de diagnóstico")
+      xlab("Fecha de diagnóstico") + 
+      ylab("Porcentaje")
     
       ggplotly(g2) %>% 
       hide_legend()
@@ -376,7 +388,7 @@ shinyServer(function(input, output, session){
                   label = paste0(rownames(totalesS), ": ", totalesS$Total)) %>% # popup dep name
       addMinicharts(lng = cent[, 1], 
                     lat = cent[, 2],
-                    colorPalette = hue_pal()(length(levels(xS$Linaje.poreCov))),
+                    colorPalette = unname(pal[colnames(totalesS)[-dim(totalesS)[2]]]),
                     chartdata = totalesS[,-dim(totalesS)[2]],
                     type = "pie", 
                     showLabels = TRUE, 
@@ -394,7 +406,7 @@ shinyServer(function(input, output, session){
     if (ln>10){
       pals <- colorRampPalette(pal_npg()(10))(ln)
     }else if(colorbyS() == "Linaje"){
-      pals <- hue_pal()(length(levels(xS$Linaje.poreCov)))
+      pals <- pal[colnames(totalesS)[-dim(totalesS)[2]]]
     }else{
       pals <- pal_npg()(ln)
     }
@@ -402,7 +414,8 @@ shinyServer(function(input, output, session){
     g7 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyS()))) + 
       stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "stack") + 
       scale_fill_manual(values = pals) + 
-      theme_bw()
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 35, vjust = 0.5)) 
     
     ggplotly(g7)
     
