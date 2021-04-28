@@ -56,7 +56,7 @@ ui <- dashboardPage(
           fluidRow(
             
             box(
-              title = "asdf",
+              title = "Serie de datos temporales",
               width = 12,
               fluidRow(
                 column(
