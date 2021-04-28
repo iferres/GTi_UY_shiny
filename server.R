@@ -428,10 +428,8 @@ shinyServer(function(input, output, session){
   })
   
   output$seqdata <- renderDT({
-    datatable(xS[, c("ID Consorcio", "Ct", "Departamento", "Sexo", "QC_FINAL", "Mutaciones", "Deleciones")])
+    datatable(xS[, c("ID Consorcio", "Ct", "Departamento", "Sexo", "QC_FINAL", "Mutaciones", "Deleciones", "Linaje.poreCov")])
   })
     
-  
-  
   
 })
