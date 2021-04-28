@@ -26,6 +26,12 @@ shinyServer(function(input, output, session){
   ## PARSE DATA ##
   ################
   
+  # Muestras procesadas
+  NIDS <- length(unique(x$`ID Consorcio`))
+  NSEQ <- length(which(x$Secuenciación == "Si"))
+  
+  
+  
   # x <- readRDS("data/toy.RDS")
   
   # Remove "Descartada".
@@ -178,12 +184,12 @@ shinyServer(function(input, output, session){
   
   ## VALUE BOXES 
   output$num_qpcr <- renderValueBox({
-    valueBox(sum(totalesV$Total), 
-             subtitle = "Número de muestras por qPCR", 
+    valueBox(NIDS, 
+             subtitle = "Número de muestras procesadas", 
              color = "green")
   })
   output$num_seq <- renderValueBox({
-    valueBox(sum(totalesS$Total),
+    valueBox(NSEQ,
              subtitle = "Número de muestras secuenciadas",
              color = "green")
   })
