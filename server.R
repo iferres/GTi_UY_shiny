@@ -185,7 +185,7 @@ shinyServer(function(input, output, session){
   ## VALUE BOXES 
   output$num_qpcr <- renderValueBox({
     valueBox(NIDS, 
-             subtitle = "Número de muestras procesadas", 
+             subtitle = "Número de muestras ingresadas", 
              color = "green")
   })
   output$num_seq <- renderValueBox({
