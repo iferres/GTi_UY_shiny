@@ -264,15 +264,15 @@ shinyServer(function(input, output, session){
     g3 <- ggplot(X(), aes(x=`Fecha de diagnóstico2`, y = Edad, color = `Variante por PCR`)) + 
       geom_point() + 
       ylab("Edad") + 
-      scale_color_manual(values = pal, drop = FALSE, guide = FALSE) +
+      scale_color_manual(values = pal[levels(x$`Variante por PCR`)], drop = FALSE, guide = FALSE) +
       theme_bw()
     g4 <- ggplot(X(), aes(x = `Fecha de diagnóstico2`)) + 
       geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
-      scale_fill_manual(values = pal, drop = FALSE, guide = FALSE) +
+      scale_fill_manual(values = pal[levels(x$`Variante por PCR`)], drop = FALSE, guide = FALSE) +
       theme_void()
     g5 <- ggplot(X(), aes(x = Edad)) + 
       geom_density(aes(fill = `Variante por PCR`), alpha = 0.5) + 
-      scale_fill_manual(values = pal, drop = FALSE, guide = FALSE) +
+      scale_fill_manual(values = pal[levels(x$`Variante por PCR`)], drop = FALSE, guide = FALSE) +
       theme_void() + 
       coord_flip() 
     subplot(ggplotly(g4), plotly_empty(),
@@ -291,7 +291,7 @@ shinyServer(function(input, output, session){
   ## STEP PLOT
   output$cumulative <- renderPlotly({
     g1 <- ggplot(X(), aes(x=`Fecha de diagnóstico2`, color=`Variante por PCR`, y = conteo_variante)) + 
-      geom_step() + scale_color_manual(values = pal, drop = F) + 
+      geom_step() + scale_color_manual(values = pal[levels(x$`Variante por PCR`)], drop = F) + 
       theme_bw() + 
       xlab("Fecha de diagnóstico") + 
       ylab("Conteo")
@@ -347,7 +347,7 @@ shinyServer(function(input, output, session){
                  fill = variable,
                  group = variable)) +
       geom_area() +
-      scale_fill_manual(values = pal, drop = F) +
+      scale_fill_manual(values = pal[levels(x$`Variante por PCR`)], drop = F) +
       theme_bw() + 
       xlab("Fecha de diagnóstico") + 
       ylab("Porcentaje")
