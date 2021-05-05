@@ -19,6 +19,8 @@ shinyServer(function(input, output, session){
     x
   }
   
+  show_modal_spinner(text = "Descarganado datos...")
+  
   x <- readdata(times = 3)
   gs4_deauth()
   
@@ -110,6 +112,7 @@ shinyServer(function(input, output, session){
   class(totalesS) <- "matrix"
   totalesS <- as.data.frame(totalesS)
   totalesS$Total <- rowSums(totalesS)
+  remove_modal_spinner()
   
   
   #########

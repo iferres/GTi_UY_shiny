@@ -13,6 +13,7 @@ library(scales)
 library(ggsci)
 library(RColorBrewer)
 library(DT)
+library(shinybusy)
 
 departamentos <- st_read("data/Departamentos.shp")
 # Compute centroid
