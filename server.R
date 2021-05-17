@@ -6,12 +6,12 @@ shinyServer(function(input, output, session){
   ## READ LATEST DATA ##
   ######################
   
-  x <- readRDS("~/x.rds")
-  NIDS <- readRDS("~/NIDS.rds")
-  NSEQ <- readRDS("~/NSEQ.rds")
-  totalesV <- readRDS("~/totalesV.rds")
-  xS <- readRDS("~/xS.rds")
-  totalesS <- readRDS("~/totalesS.rds")
+  x <- readRDS("~/Downloads/x.rds")
+  NIDS <- readRDS("~/Downloads/NIDS.rds")
+  NSEQ <- readRDS("~/Downloads/NSEQ.rds")
+  totalesV <- readRDS("~/Downloads/totalesV.rds")
+  xS <- readRDS("~/Downloads/xS.rds")
+  totalesS <- readRDS("~/Downloads/totalesS.rds")
   
   # readdata <- function(times = 3){
   #   on.exit( gs4_deauth() )
