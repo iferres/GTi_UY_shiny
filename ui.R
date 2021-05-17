@@ -9,6 +9,13 @@ ui <- dashboardPage(
   
   body = dashboardBody(
     
+    busy_start_up(
+      loader = spin_epic("orbit", color = "green"),
+      text = "Descargando y procesando datos...",
+      timeout = 1500,
+      mode = "auto"
+    ),
+    
     fluidRow(
       valueBoxOutput("num_qpcr"),
       valueBoxOutput("num_seq"),
