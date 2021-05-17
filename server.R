@@ -7,11 +7,11 @@ shinyServer(function(input, output, session){
   ######################
   
   x <- readRDS("~/x.rds")
-  NIDS <- readRDS(NIDS, "~/NIDS.rds")
-  NSEQ <- readRDS(NSEQ, "~/NSEQ.rds")
-  totalesV <- readRDS(totalesV, "~/totalesV.rds")
-  xS <- readRDS(xS, "~/xS.rds")
-  totalesS <- readRDS(totalesS, "~/totalesS.rds")
+  NIDS <- readRDS("~/NIDS.rds")
+  NSEQ <- readRDS("~/NSEQ.rds")
+  totalesV <- readRDS("~/totalesV.rds")
+  xS <- readRDS("~/xS.rds")
+  totalesS <- readRDS("~/totalesS.rds")
   
   # readdata <- function(times = 3){
   #   on.exit( gs4_deauth() )
