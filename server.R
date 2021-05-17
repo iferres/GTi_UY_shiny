@@ -45,7 +45,12 @@ shinyServer(function(input, output, session){
   }
   
   # Remove without Departamento info.
-  torm <- which(is.na(x$Departamento))
+  # torm <- which(is.na(x$Departamento))
+  # if (length(torm)){
+  #   x <- x[-torm, ]
+  # }
+  
+  torm <- which(x$`PCR variantes` == "No")
   if (length(torm)){
     x <- x[-torm, ]
   }
