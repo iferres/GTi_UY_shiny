@@ -6,6 +6,7 @@
 
 library(googlesheets4)
 library(stringi)
+library(sf)
 
 readdata <- function(times = 3){
   on.exit( gs4_deauth() )
@@ -23,6 +24,8 @@ readdata <- function(times = 3){
 
 x <- readdata(times = 3)
 gs4_deauth()
+
+departamentos <- st_read("~/GTi_UY_shiny/data/Departamentos.shp")
 
 
 ################
