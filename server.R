@@ -19,7 +19,7 @@ shinyServer(function(input, output, session){
     x
   }
   
-  show_modal_spinner(text = "Descarganado datos...")
+  show_modal_spinner(text = "Descargando datos...")
   
   x <- readdata(times = 3)
   gs4_deauth()
