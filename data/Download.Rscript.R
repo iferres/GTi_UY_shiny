@@ -5,6 +5,7 @@
 # 5 * * * * Rscript ~/GTi_UY_shiny/data/Download.Rscript.R
 
 library(googlesheets4)
+library(stringi)
 
 readdata <- function(times = 3){
   on.exit( gs4_deauth() )
