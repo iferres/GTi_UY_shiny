@@ -6,7 +6,7 @@ shinyServer(function(input, output, session){
   ## READ LATEST DATA ##
   ######################
   
-  x <- readRDS("~/drive_data.RDS")
+  x <- readRDS("~/drive_data.rds")
   
   # readdata <- function(times = 3){
   #   on.exit( gs4_deauth() )
