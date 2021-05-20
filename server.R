@@ -71,6 +71,8 @@ shinyServer(function(input, output, session){
   win <- reactiveVal(7)
   colorbyV <- reactiveVal("Variante")
   colorbyS <- reactiveVal("Linaje")
+  scaleV <- reactiveVal("Conteo")
+  scaleS <- reactiveVal("Conteo")
   
   
   observeEvent(input$color_byV, {
@@ -79,6 +81,14 @@ shinyServer(function(input, output, session){
   
   observeEvent(input$color_byS, {
     colorbyS(input$color_byS)
+  })
+  
+  observeEvent(input$scale_V, {
+    scaleV(input$scale_V)
+  })
+  
+  observeEvent(input$scale_S, {
+    scaleS(input$scale_S)
   })
   
   observeEvent({
@@ -133,6 +143,9 @@ shinyServer(function(input, output, session){
   
   ## LEAFLET MAP  
   output$mapV <- renderLeaflet({
+    
+    remove_start_up()
+    
     leaflet(departamentos, options = leafletOptions(zoomControl=FALSE, minZoom = 7, maxZoom = 7)) %>%
       addPolygons(color = "black",
                   fillColor = colorNumeric("Greens", domain = NULL)(totalesV$Total),
@@ -166,11 +179,27 @@ shinyServer(function(input, output, session){
       pals <- pal_npg()(ln)
     }
     
-    g6 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyV()))) + 
-      stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "stack") + 
-      scale_fill_manual(values = pals) + 
-      theme_bw() +
-      theme(axis.text.x = element_text(angle = 35, vjust = 0.5)) 
+    if (scaleV() == "Conteo"){
+      
+      g6 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyV()))) + 
+        stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "stack") + 
+        scale_fill_manual(values = pals) + 
+        theme_bw() +
+        theme(axis.text.x = element_text(angle = 35, vjust = 0.5))
+      
+    } else {
+      
+      g6 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyV()))) + 
+        stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "fill") + 
+        scale_fill_manual(values = pals) + 
+        theme_bw() +
+        theme(axis.text.x = element_text(angle = 35, vjust = 0.5)) + 
+        scale_y_continuous(labels = scales::percent) + 
+        ylab("Porcentaje")
+      
+    }
+    
+    
     
     ggplotly(g6)
     
@@ -339,11 +368,26 @@ shinyServer(function(input, output, session){
       pals <- pal_npg()(ln)
     }
     
-    g7 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyS()))) + 
-      stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "stack") + 
-      scale_fill_manual(values = pals) + 
-      theme_bw() +
-      theme(axis.text.x = element_text(angle = 35, vjust = 0.5)) 
+    if (scaleS() == "Conteo"){
+      
+      g7 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyS()))) + 
+        stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "stack") + 
+        scale_fill_manual(values = pals) + 
+        theme_bw() +
+        theme(axis.text.x = element_text(angle = 35, vjust = 0.5)) 
+      
+    } else {
+      
+      g7 <- ggplot(df, aes(x=Semana, fill = !! sym(colorbyS()))) + 
+        stat_summary(aes(y = Conteo), fun = "sum", geom = "bar", position = "fill") + 
+        scale_fill_manual(values = pals) + 
+        theme_bw() +
+        theme(axis.text.x = element_text(angle = 35, vjust = 0.5)) + 
+        scale_y_continuous(labels = scales::percent) + 
+        ylab("Porcentaje")
+      
+    }
+    
     
     ggplotly(g7)
     

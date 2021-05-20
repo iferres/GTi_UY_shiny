@@ -46,12 +46,22 @@ ui <- dashboardPage(
                 
                 column(
                   width = 6, 
-                  pickerInput(
-                    "color_byV",
-                    label = "Colorear por:", 
-                    choices = c("Variante", "Departamento", "Sexo"),
-                    selected = "Variante",
-                    width = "300px"
+                  fluidRow(
+                    pickerInput(
+                      "color_byV",
+                      label = "Colorear por:", 
+                      choices = c("Variante", "Departamento", "Sexo"),
+                      selected = "Variante",
+                      width = "200px"
+                    ),
+                    radioButtons(
+                      "scale_V",
+                      label = "Escala",
+                      choices = c("Conteo", "Porcentaje"), 
+                      selected = "Conteo",
+                      inline = TRUE,
+                      width = "200px"
+                    )
                   ),
                   plotlyOutput("barV", height = "500px")
                 )
@@ -125,12 +135,22 @@ ui <- dashboardPage(
                 ),
                 column(
                   width = 6,
-                  pickerInput(
-                    "color_byS",
-                    label = "Colorear por:", 
-                    choices = c("Linaje", "Departamento", "Sexo"),
-                    selected = "Linaje",
-                    width = "300px"
+                  fluidRow(
+                    pickerInput(
+                      "color_byS",
+                      label = "Colorear por:", 
+                      choices = c("Linaje", "Departamento", "Sexo"),
+                      selected = "Linaje",
+                      width = "200px"
+                    ),
+                    radioButtons(
+                      "scale_S",
+                      label = "Escala",
+                      choices = c("Conteo", "Porcentaje"), 
+                      selected = "Conteo",
+                      inline = TRUE, 
+                      width = "200px"
+                    )
                   ),
                   plotlyOutput("barS", height = "600px")
                 )
