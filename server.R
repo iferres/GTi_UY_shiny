@@ -69,6 +69,7 @@ shinyServer(function(input, output, session){
   
   X <- reactiveVal(x)
   win <- reactiveVal(7)
+  winS <- reactiveVal(7)
   colorbyV <- reactiveVal("Variante")
   colorbyS <- reactiveVal("Linaje")
   scaleV <- reactiveVal("Conteo")
@@ -397,6 +398,37 @@ shinyServer(function(input, output, session){
     
     ggplotly(g7)
     
+  })
+  
+  
+  observeEvent(input$windowS, {
+    winS(input$windowS)
+  })
+  
+  
+  output$areaS <- renderPlotly({
+    ww <- cut(X()$`Fecha de diagnóstico2`, breaks = paste(winS(), "days"), labels = FALSE)
+    g8 <- X() %>% by(ww, function(y) y ) %>%
+      lapply(function(y){
+        data.frame(
+          as.list(proportions(table(factor(y$Linaje.poreCov, levels = names(pal)))) * 100),
+          list(Day = min(y$`Fecha de diagnóstico2`))
+        )
+      }) %>%
+      do.call(rbind, .)  %>%
+      melt(id.vars="Day") %>%
+      ggplot(aes(x = Day,
+                 y = value,
+                 fill = variable,
+                 group = variable)) +
+      geom_area() +
+      scale_fill_manual(values = pal, drop = F) +
+      theme_bw() + 
+      xlab("Fecha de diagnóstico") + 
+      ylab("Porcentaje")
+    
+    ggplotly(g8) %>% 
+      hide_legend()
   })
   
   output$seqdata <- renderDT({

@@ -159,6 +159,22 @@ ui <- dashboardPage(
             )
           ), 
           fluidRow(
+            sliderInput(
+              "windowS",
+              label = "Ventana de promedios:",
+              min = 1,
+              max = 7,
+              value = 7,
+              step = 1, 
+              round = TRUE, 
+              width = "300px"
+            ),
+            column(
+              width = 11,
+              plotlyOutput("areaS")
+            )
+          ),
+          fluidRow(
             DTOutput("seqdata")
           )
         )
