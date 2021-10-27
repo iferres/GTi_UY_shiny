@@ -366,10 +366,10 @@ shinyServer(function(input, output, session){
     # df$Departamento <- factor(df$Departamento, levels = departamentos$admlnm)
     
     ln <- length(levels(df[[colorbyS()]]))
-    if (ln>10){
-      pals <- colorRampPalette(pal_npg()(10))(ln)
-    }else if(colorbyS() == "Linaje"){
+    if(colorbyS() == "Linaje"){
       pals <- pal[colnames(totalesS)[-dim(totalesS)[2]]]
+    }else if(ln>10){
+      pals <- colorRampPalette(pal_npg()(10))(ln)
     }else{
       pals <- pal_npg()(ln)
     }
