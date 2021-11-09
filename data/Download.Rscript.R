@@ -28,6 +28,11 @@ gs4_deauth()
 departamentos <- st_read("~/GTi_UY_shiny/data/Departamentos.shp")
 
 
+## setear linaje_nov21 como Linaje.poreCov para mostrar lo más actualizado
+x$Linaje.poreCov <- x$linaje_nov21
+
+
+
 ################
 ## PARSE DATA ##
 ################
