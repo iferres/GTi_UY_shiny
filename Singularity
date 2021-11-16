@@ -3,7 +3,8 @@ From: rocker/shiny:4.1.2
 
 %post
     apt update -y && \
-    apt install libgdal-dev libproj-dev libgeos-dev libudunits2-dev -y
+    apt install libgdal-dev libproj-dev libgeos-dev libudunits2-dev -y && \
+    apt clean -y 
     install2.r shinydashboard \
     shinyWidgets \
     plotly \
@@ -19,7 +20,6 @@ From: rocker/shiny:4.1.2
     RColorBrewer \
     DT \
     shinybusy 
-mkdir -p /var/log/shiny-server
 
 %runscript
     /usr/bin/shiny-server 2>&1
@@ -28,4 +28,4 @@ mkdir -p /var/log/shiny-server
     /usr/bin/shiny-server 2>&1
 
 %environment
-    export PORT=3838
+    export PORT=4051
