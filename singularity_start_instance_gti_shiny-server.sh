@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+mkdir -p ~/Downloads
 mkdir -p /tmp/shinylog 
 mkdir -p /tmp/shinybookmark
 singularity instance start \
