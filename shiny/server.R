@@ -119,17 +119,17 @@ shinyServer(function(input, output, session){
   output$num_qpcr <- renderValueBox({
     valueBox(NIDS, 
              subtitle = "Número de muestras ingresadas", 
-             color = "green")
+             color = "blue")
   })
   output$num_seq <- renderValueBox({
     valueBox(NSEQ,
              subtitle = "Número de muestras secuenciadas",
-             color = "green")
+             color = "blue")
   })
   output$last_update <- renderValueBox({
     valueBox(format(max(x$`Fecha de diagnóstico2`), format="%d/%m/%Y"),
              subtitle = "Fecha de diagóstico más reciente", 
-             color = "green")
+             color = "blue")
   })
   
   

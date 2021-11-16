@@ -1,5 +1,5 @@
 ui <- dashboardPage(
-  skin = "green",
+  skin = "black",
   
   header = dashboardHeader(
     title = "GTI - Vigilancia SARS-Cov-2"
