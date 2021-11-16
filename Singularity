@@ -22,9 +22,11 @@ From: rocker/shiny:4.1.2
     shinybusy 
 
 %runscript
+    /srv/shiny-server/data/Download.Rscript.R
     /usr/bin/shiny-server 2>&1
 
 %startscript
+    /srv/shiny-server/data/Download.Rscript.R
     /usr/bin/shiny-server 2>&1
 
 %environment
