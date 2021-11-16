@@ -25,7 +25,7 @@ readdata <- function(times = 3){
 x <- readdata(times = 3)
 gs4_deauth()
 
-departamentos <- st_read("~/GTi_UY_shiny/shiny/data/Departamentos.shp")
+departamentos <- st_read("/srv/shiny-server/data/Departamentos.shp")
 
 
 ## setear linaje_nov21 como Linaje.poreCov para mostrar lo más actualizado

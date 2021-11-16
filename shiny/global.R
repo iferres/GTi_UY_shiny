@@ -15,7 +15,7 @@ library(RColorBrewer)
 library(DT)
 library(shinybusy)
 
-departamentos <- st_read("data/Departamentos.shp")
+departamentos <- st_read("/srv/shiny-server/data/Departamentos.shp")
 # Compute centroid
 cent <- st_centroid(departamentos)$geometry
 cent <- do.call(rbind, cent)
