@@ -68,7 +68,7 @@ shinyServer(function(input, output, session){
   ################
   
   X <- reactiveVal(x)
-  XS <- reactiveVal(xS)
+  #XS <- reactiveVal(xS)
   win <- reactiveVal(7)
   winS <- reactiveVal(7)
   colorbyV <- reactiveVal("Variante")
@@ -408,8 +408,8 @@ shinyServer(function(input, output, session){
   
   
   output$areaS <- renderPlotly({
-    ww <- cut(XS()$`Fecha de diagnóstico2`, breaks = paste(winS(), "days"), labels = FALSE)
-    g8 <- XS() %>% by(ww, function(y) y ) %>%
+    ww <- cut(xS$`Fecha de diagnóstico2`, breaks = paste(winS(), "days"), labels = FALSE)
+    g8 <- xS %>% by(ww, function(y) y ) %>%
       lapply(function(y){
         data.frame(
           as.list(proportions(table(factor(y$Linaje.poreCov, levels = names(pal)))) * 100),
