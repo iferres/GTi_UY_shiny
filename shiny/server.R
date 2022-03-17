@@ -138,7 +138,9 @@ shinyServer(function(input, output, session){
   vars <- as.character(unique(xS$Linaje.poreCov))
   vcls <- colorRampPalette(c(pal_npg()(10), pal_igv()(10)[-2]))(length(vars))
   pal <- setNames(vcls, vars)
-  pal <- c(pal, "P.1/B.1.351" = pal[["P.1"]], "No-VOC"="#00A087FF")
+  pal <- c(pal, "P.1/B.1.351" = pal[["P.1"]], "No-VOC"="#00A087FF", 
+           "B.1.1.7/BA.1" = pal[["BA.1"]], 
+           "P.1/B.1.351/BA.2" = pal[["BA.2"]])
   pal["<NA>"] <- "grey"
   
   # vocs <- c("P.1", "P.1/B.1.351", "P.2", "B.1.1.7", "B.1.617.2", "No-VOC")
