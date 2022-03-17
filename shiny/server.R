@@ -164,8 +164,12 @@ shinyServer(function(input, output, session){
                   label = paste0(rownames(totalesV), ": ", totalesV$Total)) %>% # popup dep name
       addMinicharts(lng = cent[, 1], 
                     lat = cent[, 2],
-                    colorPalette = unname(pal[c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2")]),
-                    chartdata = totalesV[,c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2")],
+                    colorPalette = unname(pal[c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2",
+                                                "B.1.1.7/BA.1",
+                                                "P.1/B.1.351/BA.2")]),
+                    chartdata = totalesV[,c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2",
+                                            "B.1.1.7/BA.1",
+                                            "P.1/B.1.351/BA.2")],
                     type = "pie", 
                     showLabels = TRUE, 
                     height = 50, 
@@ -182,7 +186,9 @@ shinyServer(function(input, output, session){
     if (ln>10){
       pals <- colorRampPalette(pal_npg()(10))(ln)
     }else if(colorbyV() == "Variante"){
-      pals <-pal[c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2")]
+      pals <-pal[c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2",
+                   "B.1.1.7/BA.1",
+                   "P.1/B.1.351/BA.2")]
     }else{
       pals <- pal_npg()(ln)
     }
@@ -299,8 +305,12 @@ shinyServer(function(input, output, session){
         )
       }) %>%
       do.call(rbind, .)  %>%
-      setNames(c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2", "Day")) %>%
-      melt(id.vars = "Day", measure.vars = c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2")) %>%
+      setNames(c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2",
+                 "B.1.1.7/BA.1",
+                 "P.1/B.1.351/BA.2" ,"Day")) %>%
+      melt(id.vars = "Day", measure.vars = c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2",
+                                             "B.1.1.7/BA.1",
+                                             "P.1/B.1.351/BA.2")) %>%
       ggplot(aes(x = Day,
                  y = value,
                  fill = variable,

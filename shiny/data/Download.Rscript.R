@@ -68,7 +68,12 @@ x$Departamento <- sapply(x$Departamento,  grep, departamentos$admlnm, value = TR
 x$Departamento <- factor(x$Departamento, levels = departamentos$admlnm)
 
 # Factorize variants and remove NAs
-x$`Variante por PCR` <- factor(x$`Variante por PCR`, levels = c("No-VOC", "P.1/B.1.351", "B.1.1.7", "B.1.617.2"))
+x$`Variante por PCR` <- factor(x$`Variante por PCR`, levels = c("No-VOC", 
+                                                                "P.1/B.1.351", 
+                                                                "B.1.1.7", 
+                                                                "B.1.617.2",
+                                                                "B.1.1.7/BA.1",
+                                                                "P.1/B.1.351/BA.2"))
 torm <- which(is.na(x$`Variante por PCR`))
 if (length(torm)){
   x <- x[-torm, ]
